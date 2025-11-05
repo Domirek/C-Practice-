@@ -1,0 +1,63 @@
+//Шифрование и дешифрование из шифра Цезаря с перебором всех ключей
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h> // Для isupper, islower
+#include <locale.h>   // Для setlocale
+
+const char *ALPHABET_ENG_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char *ALPHABET_ENG_LOWER = "abcdefghijklmnopqrstuvwxyz";
+const int ALPHABET_SIZE = 26;
+
+// Функция для шифрования текста шифром Цезаря
+void encryptCaesar(char *text, int key) {
+    for (int i = 0; i < strlen(text); i++) {
+        char current_char = text[i];
+        int is_upper = 0;
+        const char *alphabet_ptr = NULL;
+
+        if (isupper(current_char)) {
+            is_upper = 1;
+            alphabet_ptr = ALPHABET_ENG_UPPER;
+        } else if (islower(current_char)) {
+            alphabet_ptr = ALPHABET_ENG_LOWER;
+        } else continue; // Пропускаем небуквенные символы
+
+        //Ищем позицию символа в алфавите
+        int char_index = -1;
+        for (int j = 0; j < ALPHABET_SIZE; j++) {
+            if (current_char == alphabet_ptr[j]) {
+                char_index = j;
+                break; }
+        }
+
+        if (char_index != -1) {
+            //Вычисляем новую позицию со сдвигом и зацикливанием
+            int new_index = (char_index + key) % ALPHABET_SIZE;
+            if (new_index < 0) //Обработка отрицательных значений
+                new_index += ALPHABET_SIZE;
+            text[i] = alphabet_ptr[new_index];
+        }
+    }
+}
+
+// Функция для дешифрования текста шифром Цезаря
+void decryptCaesar(char *text, int key) {
+    //Дешифрование - это шифрование с отр ключом
+    encryptCaesar(text, -key);
+}
+
+int main() {
+    char message[] = "FGRRY XRL";
+
+    printf("Исходное сообщение: %s\n", message);
+    
+    //Дешифруем
+    for (int shift_key = 1; shift_key < 26; shift_key++) {
+        decryptCaesar(message, shift_key);
+        printf("Ключ %d. Расшифрованное сообщение:: %s\n", shift_key, message);
+    }
+    
+    return 0;
+}
