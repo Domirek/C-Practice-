@@ -1,0 +1,51 @@
+//Декодирование двоичного кода
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+int binaryToDecimal(char *binary){
+    int decimal = 0;
+    int lenght = strlen(binary);
+
+    for (int i = 0; i < lenght; i++) {
+        if (binary[lenght - 1 - i] == '1') {
+            decimal += pow(2, i);
+        }
+    }
+    return decimal;
+}
+
+int main() {
+    char binary[] = "11010000 10100110 11010000 10011000 11010000 10100100 11010000 10100000 11010000 10011110 11010000 10010010 11010000 10011110 11010000 10011001 00100000 11010000 10011111 11010000 11010000 10011000 11010000 10010111 11010000 10100000 11010000 10010000 11010000 10011010";
+    printf("Двоичное: %s\n", binary);
+
+    char decoded_text[64]; //Создадим буфер для хранения декодированного текста
+    int decoded_index = 0; //Индекс декодированного фрагмента
+    char *token; //Создаем токен - маленькая единица кода. Является указателем на начало фрагмента
+    token = strtok(binary, " "); //По пробелам разделяем строку на токены
+
+    printf("Декодирование:\n");
+
+    while (token != NULL) { //Будем выполнять пока не закончатся токены
+        if (strlen(token) != 8) { 
+            printf("Ошибка. Сегмент некорректный (не 8 бит): '%s'\n", token);
+            exit(EXIT_FAILURE);
+        }
+        
+        int decimal_val = binaryToDecimal(token); //Текущий токен конвертируем в число и записываем
+        if (decimal_val == -1) {
+            printf("Ошибка. Функция не сработала\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("%d ", decimal_val);
+        decoded_text[decoded_index++] = (char)decimal_val; //В массив буфера добавляем полученное число, преобразовав его в char
+        token = strtok(NULL, " ");
+    }
+
+    decoded_text[decoded_index] = '\0';
+
+    printf("\nДекодированный текст: %s\n", decoded_text);
+
+    return 0;
+}
